@@ -1,3 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'tailwindcss';
+
+@layer base {
+  html {
+    font-size: 13px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+}
+
+[data-sonner-toaster] {
+  font-family: 'IBM Plex Mono', sans-serif !important;
+}

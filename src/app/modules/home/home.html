@@ -1,0 +1,123 @@
+<form class="mb-6" action="">
+    <div class="flex items-stretch gap-2">
+        <input type="text" 
+            name="search"
+            placeholder="Search project..." 
+            class="px-4 py-2 h-[42px] w-auto sm:w-[300px] border border-gray-200 outline-0 focus:ring-2"
+        /> 
+        <button class="ms-auto bg-gray-950 px-4 flex items-center py-3 justify-center cursor-pointer" (click)="openCreateProjectModal()">
+            <span class="me-3 text-white">Add Project</span>
+            <svg lucidePlus size="16" class="stroke-white"></svg>
+        </button>
+    </div>
+</form>
+
+<div>
+    <div class="grid grid-cols-[1fr_48.5px] lg:grid-cols-[1fr_2fr_1fr_48.5px] font-semibold">
+        
+    </div>
+    <div class="grid grid-cols-[1fr_max-content] lg:grid-cols-[1fr_1fr_1fr_max-content]">
+        @if(!projects().loading) {
+            @for(project of projects().data; track project.id) {
+                @if($index === 0) {
+                    <div class="font-semibold p-3 border-b border-t border-gray-100">Project Name</div>
+                    <div class="font-semibold hidden lg:inline-block p-3 border-b border-t border-gray-100">Email</div>
+                    <div class="font-semibold hidden lg:inline-block p-3 border-b border-t border-gray-100">Date Created</div>
+                    <div class="font-semibold p-3 border-b border-t border-gray-100 text-center">Actions</div>
+                }
+
+                <div class="p-3 content-center h-full border-b border-gray-100">
+                    <span>{{ project.name }}</span>
+                </div>
+                <div class="hidden lg:inline-block p-3 content-center h-full border-b border-gray-100">
+                    <span>{{ project.email }}</span>
+                </div>
+                <div class="hidden lg:inline-block p-3 content-center h-full border-b border-gray-100">
+                    <span>{{ project.date_created | date: 'MMMM dd, yyyy' }}</span>
+                </div>
+                <div class="p-3 content-center h-full border-b border-gray-100 space-x-2">
+                    <button class="p-2 border border-gray-100 cursor-pointer transition hover:bg-gray-100" (click)="viewTimesheet(project.id)">
+                        <svg lucideTimer size="14"></svg>
+                    </button>
+                    <button class="p-2 border border-gray-100 cursor-pointer transition hover:bg-gray-100" (click)="viewTimesheet(project.id)">
+                        <svg lucideArrowDownToLine size="14"></svg>
+                    </button>
+                    <button class="p-2 border border-gray-100 cursor-pointer transition hover:bg-gray-100" (click)="viewTimesheet(project.id)">
+                        <svg lucideSend size="14"></svg>
+                    </button>
+                </div>
+            } @empty {
+                <div class="col-span-4">
+                    <p class="text-gray-500 text-center p-3 mb-3">No projects available.</p>
+                </div>
+                <div class="col-span-4">
+                    <button class="bg-gray-950 px-4 mx-auto gap-3 flex items-center justify-center cursor-pointer text-white w-auto py-3 h-[42px]" (click)="openCreateProjectModal()">
+                        <span>Add New Project</span>
+                        <svg lucidePlus size="16" class="stroke-white"></svg>
+                    </button>
+                </div>
+            }
+        } @else {
+            @for(item of [1, 2, 3]; track $index) {
+                @if($index === 0) {
+                    <!-- <h2 class="text-lg font-medium mb-3">Active Projects</h2> -->
+                    <div class="font-semibold p-3 border-b border-gray-100">Project Name</div>
+                    <div class="font-semibold hidden lg:inline-block p-3 border-b border-gray-100">Email</div>
+                    <div class="font-semibold hidden lg:inline-block p-3 border-b border-gray-100">Date Created</div>
+                    <div class="font-semibold p-3 border-b border-gray-100 text-center">Actions</div>
+                }
+
+                <div class="p-3 h-full content-center border-b border-gray-100">
+                    <div class="bg-gray-200 rounded-sm animate-pulse h-[14px] w-[150px]"></div>
+                </div>
+                <div class="hidden lg:inline-block p-3 h-full content-center border-b border-gray-100">
+                    <div class="bg-gray-200 rounded-sm animate-pulse h-[14px] w-[250px]"></div>
+                </div>
+                <div class="hidden lg:inline-block p-3 h-full content-center border-b border-gray-100">
+                    <div class="bg-gray-200 rounded-sm animate-pulse h-[14px] w-[150px]"></div>
+                </div>
+                <div class="flex space-x-2 p-3 h-full content-center border-b border-gray-100">
+                    <div class="bg-gray-200 rounded animate-pulse size-[29px]"></div>
+                    <div class="bg-gray-200 rounded animate-pulse size-[29px]"></div>
+                    <div class="bg-gray-200 rounded animate-pulse size-[29px]"></div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<app-modal
+    modalId="create-project"
+    title="Create project"
+    submitLabel="Create"
+    [data]="newProject()"
+    [transform]="toProjectModel"
+    (onSubmit)="addProject($event)"
+>
+    <ng-template let-draft let-update="update">
+        <div class="grid gap-4">
+            <label class="grid gap-2">
+                <span class="text-sm font-medium">Project name</span>
+                <input
+                    type="text"
+                    name="projectName"
+                    required
+                    [ngModel]="draft?.name"
+                    (ngModelChange)="update({ ...draft, name: $event })"
+                    class="w-full px-4 py-2 h-[42px] border border-gray-200 outline-0 focus:ring-2"
+                />
+            </label>
+
+            <label class="grid gap-2">
+                <span class="text-sm font-medium">Email</span>
+                <input
+                    type="email"
+                    name="projectEmail"
+                    [ngModel]="draft?.email"
+                    (ngModelChange)="update({ ...draft, email: $event })"
+                    class="w-full px-4 py-2 h-[42px] border border-gray-200 outline-0 focus:ring-2"
+                />
+            </label>
+        </div>
+    </ng-template>
+</app-modal>

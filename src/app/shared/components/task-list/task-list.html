@@ -1,0 +1,26 @@
+<div class="py-1 flex items-center gap-1">
+    <button class="rounded-full p-3 cursor-pointer transition hover:bg-gray-100" (click)="startTask()">
+        @if(!isStartTask()) {
+            <svg lucidePlay size="16"></svg>
+        } @else {
+            <svg lucidePause size="16"></svg>
+        }
+    </button>
+    <input
+        type="text"
+        name="description"
+        [ngModel]="description()"
+        (ngModelChange)="description.set($event)"
+        class="md:field-sizing-content outline-0 me-12 px-4 py-2 focus:bg-gray-100 text-ellipsis"
+        (blur)="updateDescription()"
+    />
+    <!-- <span class="line-clamp-1">{{ task().description }}</span> -->
+    <span class="ms-auto me-3">{{ elapsedTime() }}</span>
+    <button class="cursor-pointer rounded-full p-3 transition hover:bg-red-50" (click)="onDelete.emit(task().id); isDeleting = true">
+        @if(!isDeleting) {
+            <svg lucideTrash size="16" class="text-red-500"></svg>
+        } @else {
+            <svg lucideLoaderCircle size="16" class="text-red-500 animate-spin"></svg>
+        }
+    </button>
+</div>

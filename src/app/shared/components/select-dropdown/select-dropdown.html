@@ -1,0 +1,46 @@
+<div class="relative grid w-full max-w-full">
+    <div
+        class="invisible col-start-1 row-start-1 flex h-[42px] items-center justify-between gap-3 border border-transparent px-3"
+        aria-hidden="true"
+    >
+        <span class="whitespace-nowrap">{{ longestOptionLabel() }}</span>
+        <svg lucideChevronDown size="16" class="shrink-0"></svg>
+    </div>
+
+    <button
+        type="button"
+        class="col-start-1 row-start-1 flex h-[42px] w-full items-center justify-between gap-3 border border-gray-200 bg-white px-3 text-left outline-0 transition focus:ring-2 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400"
+        [disabled]="isDisabled()"
+        [attr.aria-expanded]="isOpen()"
+        aria-haspopup="listbox"
+        (click)="toggle()"
+    >
+        <span class="truncate">{{ selectedLabel() }}</span>
+        <svg lucideChevronDown size="16" class="shrink-0 transition" [class.rotate-180]="isOpen()"></svg>
+    </button>
+
+    @if(isOpen()) {
+        <div
+            class="absolute left-0 top-full z-20 mt-1 max-h-60 w-full overflow-auto border border-gray-200 bg-white py-1 shadow-lg"
+            role="listbox"
+        >
+            @for(option of options(); track trackOption($index, option)) {
+                <button
+                    type="button"
+                    class="flex min-h-13 w-full items-center gap-2 px-3 text-left transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-400"
+                    role="option"
+                    [disabled]="isOptionDisabled(option)"
+                    [attr.aria-selected]="isSelected(option)"
+                    (click)="selectOption(option)"
+                >
+                    <span class="truncate">{{ getOptionLabel(option) }}</span>
+                    @if(isSelected(option)) {
+                        <svg lucideCheck size="16" class="ms-auto shrink-0"></svg>
+                    }
+                </button>
+            } @empty {
+                <div class="px-3 py-2 text-sm text-gray-500">No options available.</div>
+            }
+        </div>
+    }
+</div>

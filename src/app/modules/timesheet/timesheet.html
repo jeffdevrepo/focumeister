@@ -1,0 +1,66 @@
+<form #timesheet="ngForm" (ngSubmit)="addNewTask(timesheet)">
+    <div class="flex items-center justify-between mb-6">
+        <div class="flex gap-3">
+            
+            <!-- <button
+                type="button"
+                class="border border-gray-200 w-[42px] cursor-pointer"
+                aria-label="Create project"
+            >
+                <svg lucidePlus size="16" class="mx-auto"></svg>
+            </button> -->
+        </div>
+        <!-- <button class="flex items-center gap-3">
+            <span class="leading-none font-medium cursor-pointer">Export to PDF</span>
+            <svg lucideFileText size="18"></svg>
+        </button> -->
+    </div>
+    <div class="flex items-stretch gap-2">
+        <app-select-dropdown
+            name="project"
+            [options]="projects()"
+            valueKey="id"
+            labelKey="name"
+            [ngModel]="selectedProject()"
+            (ngModelChange)="selectedProject.set($event); getTasks($event)"
+        />
+        <input type="text" 
+            name="taskDescription" 
+            [(ngModel)]="newTaskDescription" 
+            placeholder="What is your current task?" 
+            class="w-full px-4 py-2 h-[42px] border border-gray-200 outline-0 focus:ring-2"
+        />
+        <button class="bg-gray-950 px-4 flex items-center justify-center cursor-pointer w-[111px] shrink-0" type="submit">
+            @if(taskAddLoading()) {
+                <span class="me-2 text-white">Starting</span>
+                <svg lucideLoaderCircle size="16" class="stroke-white animate-spin"></svg>
+            } @else {
+                <span class="me-2 text-white">Start</span>
+                <svg lucidePlay size="16" class="stroke-white"></svg>
+            }
+        </button>
+    </div>
+</form>
+
+<div class="mt-12">
+    @if(!taskLoading()) {
+        @for(task of tasks(); track task.id) {
+            <app-task-list 
+                [data]="task"
+                (onUpdate)="updateTask($event)"
+                (onDelete)="deleteTask($event)"
+            ></app-task-list>
+        } @empty {
+            <p class="text-gray-500 text-center">No tasks available.</p>
+        }
+    } @else {
+        @for(item of [1, 2, 3]; track $index) {
+            <div class="animate-pulse flex space-x-3 items-center py-1">
+                <div class="bg-gray-200 rounded-full size-[35.5px]"></div>
+                <div class="bg-gray-200 h-[14px] rounded-sm w-[350px]"></div>
+                <div class="bg-gray-200 h-[14px] rounded-sm w-[100px] ms-auto"></div>
+                <div class="bg-gray-200 rounded-full size-[35.5px]"></div>
+            </div>
+        }
+    }
+</div>

@@ -1,0 +1,44 @@
+@if(shouldRender()) {
+    <div
+        class="modal-backdrop"
+        role="presentation"
+        [class.modal-closing]="isClosing()"
+        (click)="closeOnBackdrop($event)"
+    >
+        <section
+            class="modal-panel"
+            role="dialog"
+            aria-modal="true"
+            [attr.aria-labelledby]="title() ? modalId() + '-title' : null"
+        >
+            <form class="modal-form" (ngSubmit)="submit()">
+                <header class="modal-header">
+                    @if(title()) {
+                        <h2 class="modal-title" [id]="modalId() + '-title'">{{ title() }}</h2>
+                    }
+                    <button class="modal-icon-button" type="button" [attr.aria-label]="cancelLabel()" (click)="close()">
+                        <svg lucideX size="18"></svg>
+                    </button>
+                </header>
+
+                <div class="modal-body">
+                    @if(contentTemplate) {
+                        <ng-container
+                            [ngTemplateOutlet]="contentTemplate"
+                            [ngTemplateOutletContext]="context()"
+                        />
+                    }
+                </div>
+
+                <footer class="modal-actions">
+                    <button class="modal-button modal-button-secondary" type="button" (click)="close()">
+                        {{ cancelLabel() }}
+                    </button>
+                    <button class="modal-button modal-button-primary" type="submit">
+                        {{ submitLabel() }}
+                    </button>
+                </footer>
+            </form>
+        </section>
+    </div>
+}
