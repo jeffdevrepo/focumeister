@@ -1,29 +1,17 @@
 <form #timesheet="ngForm" (ngSubmit)="addNewTask(timesheet)">
     <div class="flex items-center justify-between mb-6">
         <div class="flex gap-3">
-            
-            <!-- <button
-                type="button"
-                class="border border-gray-200 w-[42px] cursor-pointer"
-                aria-label="Create project"
-            >
-                <svg lucidePlus size="16" class="mx-auto"></svg>
-            </button> -->
+            <app-select-dropdown
+                name="project"
+                [options]="projects()"
+                valueKey="id"
+                labelKey="name"
+                [ngModel]="selectedProject()"
+                (ngModelChange)="selectedProject.set($event); getTasks($event)"
+            />
         </div>
-        <!-- <button class="flex items-center gap-3">
-            <span class="leading-none font-medium cursor-pointer">Export to PDF</span>
-            <svg lucideFileText size="18"></svg>
-        </button> -->
     </div>
     <div class="flex items-stretch gap-2">
-        <app-select-dropdown
-            name="project"
-            [options]="projects()"
-            valueKey="id"
-            labelKey="name"
-            [ngModel]="selectedProject()"
-            (ngModelChange)="selectedProject.set($event); getTasks($event)"
-        />
         <input type="text" 
             name="taskDescription" 
             [(ngModel)]="newTaskDescription" 

@@ -51,23 +51,25 @@ export class Timesheet implements OnInit {
   getProjects() {
     this.taskLoading.set(true);
     this.projectService.getProjects().pipe(
-      finalize(() => this.taskLoading.set(false)),
       switchMap((projects) => {
         const id = this.route.snapshot.queryParams['id'];
 
         this.projects.set(projects);
-        console.log(id ?? projects[0].id)
         this.selectedProject.set(id ? Number(id) : projects[0].id)
         return this.timeSheetService.getTasks(this.selectedProject())
       }
     ))
     .subscribe({
-      next: (tasks) => this.tasks.set(tasks),
-      error: (err) => console.log(err)
+      next: (tasks) => {
+        this.tasks.set(tasks);
+        this.taskLoading.set(false);
+      },
+      error: (err) => {
+        console.log(err);
+        this.taskLoading.set(false);
+      }
     })
   }
-
-  
 
   getTasks(projectId: number) {
     this.taskLoading.set(true);
