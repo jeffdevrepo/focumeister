@@ -23,7 +23,7 @@
                     <div class="font-semibold p-3 border-b border-t border-gray-100">Project Name</div>
                     <div class="font-semibold hidden lg:inline-block p-3 border-b border-t border-gray-100">Email</div>
                     <div class="font-semibold hidden lg:inline-block p-3 border-b border-t border-gray-100">Date Created</div>
-                    <div class="font-semibold p-3 border-b border-t border-gray-100 text-center">Actions</div>
+                    <div class="font-semibold p-3 border-b border-t border-gray-100 text-center"></div>
                 }
 
                 <div class="p-3 content-center h-full border-b border-gray-100">
@@ -36,7 +36,38 @@
                     <span>{{ project.date_created | date: 'MMMM dd, yyyy' }}</span>
                 </div>
                 <div class="p-3 content-center h-full border-b border-gray-100 space-x-2">
-                    <button class="p-2 border border-gray-100 cursor-pointer transition hover:bg-gray-100" (click)="viewTimesheet(project.id)">
+                    <app-dropdown alignment="right">
+                        <div dropdownTrigger class="p-2 border border-gray-100 cursor-pointer transition hover:bg-gray-100">
+                            <svg lucideEllipsis size="14"></svg>
+                        </div>
+
+                        <a dropdownContent role="menuitem" (click)="viewTimesheet(project.id)" 
+                            class="px-4 cursor-pointer py-3 hover:bg-gray-100 flex justify-between items-center">
+                            <span class="me-6 leading-[1]">Timesheet</span>
+                            <svg lucideTimer size="14"></svg>
+                        </a>
+                        <a dropdownContent href="/" role="menuitem"
+                            class="px-4 cursor-pointer py-3 hover:bg-gray-100 flex justify-between items-center"
+                        >
+                            <span class="me-6 leading-[1]">Download PDF</span>
+                            <svg lucideArrowDownToLine size="14"></svg>
+                        </a>
+                        <a dropdownContent href="/" role="menuitem"
+                            class="px-4 cursor-pointer py-3 hover:bg-gray-100 flex justify-between items-center"
+                        >
+                            <span class="me-6 leading-[1]">Send Invoice</span>
+                            <svg lucideSend size="14"></svg>
+                        </a>
+                        <hr dropdownContent class="border-t my-1 border-gray-100 w-full">
+                        <button dropdownContent type="button" role="menuitem"
+                            class="px-4 text-red-500 cursor-pointer py-3 hover:bg-gray-100 flex justify-between items-center w-full text-left"
+                            (click)="confirmDeleteProject(project)"
+                        >
+                            <span class="me-6 leading-[1]">Delete</span>
+                            <svg lucideTrash size="14"></svg>
+                        </button>
+                    </app-dropdown>
+                    <!-- <button class="p-2 border border-gray-100 cursor-pointer transition hover:bg-gray-100" (click)="viewTimesheet(project.id)">
                         <svg lucideTimer size="14"></svg>
                     </button>
                     <button class="p-2 border border-gray-100 cursor-pointer transition hover:bg-gray-100" (click)="viewTimesheet(project.id)">
@@ -44,7 +75,7 @@
                     </button>
                     <button class="p-2 border border-gray-100 cursor-pointer transition hover:bg-gray-100" (click)="viewTimesheet(project.id)">
                         <svg lucideSend size="14"></svg>
-                    </button>
+                    </button> -->
                 </div>
             } @empty {
                 <div class="col-span-4">

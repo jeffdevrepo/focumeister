@@ -22,4 +22,10 @@ export class ProjectService {
 
     return from(req).pipe(map((res: any) => res.data))
   }
+
+  deleteProject(id: number): Observable<any> {
+    const req = this.supabase.from('project').delete().eq('id', id).select('*').single();
+
+    return from(req).pipe(map((res: any) => res.data));
+  }
 }

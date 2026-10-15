@@ -1,16 +1,18 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { LucidePlus, LucideTimer, LucideArrowDownToLine, LucideSend } from '@lucide/angular';
+import { LucidePlus, LucideTimer, LucideArrowDownToLine, LucideSend, LucideEllipsis, LucideTrash } from '@lucide/angular';
 import { ProjectService } from '../../core/services/project/project.service';
 import { ProjectModel } from '../../core/models/project.model';
 import { DatePipe } from '@angular/common';
-import { finalize } from 'rxjs';
+import { catchError, EMPTY, finalize, switchMap, tap } from 'rxjs';
 import { EnvelopeModel } from '../../core/models/envelope.model';
 import { FormsModule } from '@angular/forms';
 import { Modal } from '../../shared/components/modal/modal';
 import { ModalService } from '../../shared/services/modal.service';
 import { ProjectForm } from '../../shared/interfaces/project-form.interface';
 import { toast } from 'ngx-sonner';
+import { Dropdown } from '../../shared/components/dropdown/dropdown';
+import { ConfirmationDialogService } from '../../shared/services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-home',
@@ -21,8 +23,11 @@ import { toast } from 'ngx-sonner';
     LucideSend,
     LucidePlus,
     LucideArrowDownToLine,
+    LucideEllipsis,
+    LucideTrash,
     FormsModule,
-    Modal
+    Modal,
+    Dropdown
 ],
   templateUrl: './home.html',
   styleUrl: './home.css',
@@ -32,6 +37,7 @@ export class Home implements OnInit {
   private projectService = inject(ProjectService);
   private router = inject(Router);
   private modalService = inject(ModalService);
+  private confirmationDialog = inject(ConfirmationDialogService);
   private readonly createProjectModalId = 'create-project';
   public projects = signal<EnvelopeModel<ProjectModel[]>>(new EnvelopeModel());
   public newProject = signal<ProjectForm>({
@@ -84,5 +90,32 @@ export class Home implements OnInit {
 
   openCreateProjectModal() {
     this.modalService.open<ProjectForm>(this.createProjectModalId, this.newProject());
+  }
+
+  confirmDeleteProject(project: ProjectModel) {
+    this.confirmationDialog.confirm({
+      title: `Delete ${project.name}?`,
+      message: 'This project will be permanently deleted.',
+      confirmLabel: 'Delete',
+    }).pipe(
+      switchMap(confirmed => {
+        if (!confirmed) return EMPTY;
+
+        return this.projectService.deleteProject(project.id).pipe(
+          tap(() => {
+            this.projects.update(state => ({
+              ...state,
+              data: (state.data ?? []).filter(item => item.id !== project.id),
+            }));
+            toast.success('Project has been deleted.');
+          }),
+          catchError(error => {
+            console.error(error);
+            toast.error('Unable to delete project.');
+            return EMPTY;
+          }),
+        );
+      }),
+    ).subscribe();
   }
 }

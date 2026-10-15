@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, effect, inject, OnInit, signal } from '@angular/core';
 import { TaskList } from '../../shared/components/task-list/task-list';
 import { CommonModule } from '@angular/common';
-import { LucideLoaderCircle, LucidePlay } from '@lucide/angular';
+import { LucideArrowLeft, LucideLoaderCircle, LucidePlay } from '@lucide/angular';
 import { TaskModel } from '../../core/models/task.model';
 import { FormsModule, NgForm } from '@angular/forms';
 import { TimesheetService } from '../../core/services/timesheet/timesheet.service';
@@ -10,7 +10,7 @@ import { finalize, switchMap } from 'rxjs';
 import { toast } from 'ngx-sonner';
 import { SelectDropdown } from '../../shared/components/select-dropdown/select-dropdown';
 import { ProjectService } from '../../core/services/project/project.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-timesheet',
@@ -18,9 +18,11 @@ import { ActivatedRoute } from '@angular/router';
     TaskList,
     LucidePlay,
     LucideLoaderCircle,
+    LucideArrowLeft,
     FormsModule,
     CommonModule,
-    SelectDropdown
+    SelectDropdown,
+    RouterLink
 ],
   templateUrl: './timesheet.html',
   styleUrl: './timesheet.css',

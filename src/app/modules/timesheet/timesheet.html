@@ -1,5 +1,8 @@
 <form #timesheet="ngForm" (ngSubmit)="addNewTask(timesheet)">
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3 mb-6">
+        <button [routerLink]="['/']" class="border border-gray-200 p-3 size-[42.5px] cursor-pointer">
+            <svg lucideArrowLeft size="16" class="stroke-gray-950 mx-auto"></svg>
+        </button>
         <div class="flex gap-3">
             <app-select-dropdown
                 name="project"
@@ -43,7 +46,7 @@
         }
     } @else {
         @for(item of [1, 2, 3]; track $index) {
-            <div class="animate-pulse flex space-x-3 items-center py-1">
+            <div class="animate-pulse flex space-x-3 items-center py-1 px-2">
                 <div class="bg-gray-200 rounded-full size-[35.5px]"></div>
                 <div class="bg-gray-200 h-[14px] rounded-sm w-[350px]"></div>
                 <div class="bg-gray-200 h-[14px] rounded-sm w-[100px] ms-auto"></div>

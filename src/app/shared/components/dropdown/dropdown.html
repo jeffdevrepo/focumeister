@@ -1,0 +1,26 @@
+<div class="flex relative">
+    <button
+        type="button"
+        class="inline-flex items-center"
+        [attr.aria-expanded]="isOpen()"
+        aria-haspopup="menu"
+        (click)="toggle()"
+    >
+        <ng-content select="[dropdownTrigger]" />
+    </button>
+
+    @if(isOpen()) {
+        <div
+            class="absolute top-full z-20 mt-1 w-max min-w-full max-w-72 border border-gray-100 bg-white py-1 shadow-lg"
+            [class.left-0]="alignment() === 'left'"
+            [class.left-1/2]="alignment() === 'center'"
+            [class.right-0]="alignment() === 'right'"
+            [class.-translate-x-1/2]="alignment() === 'center'"
+            [class.transform]="alignment() === 'center'"
+            role="menu"
+            (click)="close()"
+        >
+            <ng-content select="[dropdownContent]" />
+        </div>
+    }
+</div>

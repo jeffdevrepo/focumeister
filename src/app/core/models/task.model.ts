@@ -3,6 +3,7 @@ export class TaskModel {
     public project_id!: number;
     public description!: string;
     public duration!: number;
+    public completed!: boolean;
     public start!: Date | string;
     public end!: Date | string;
     public date_created!: Date | string;

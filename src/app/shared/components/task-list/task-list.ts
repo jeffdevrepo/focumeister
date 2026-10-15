@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, input, linkedSignal, output, signal } from '@angular/core';
 import { TaskModel } from '../../../core/models/task.model';
-import { LucideLoaderCircle, LucidePause, LucidePlay, LucideTrash } from '@lucide/angular';
+import { LucideCheck, LucideLoaderCircle, LucidePause, LucidePlay, LucideRefreshCcw, LucideTrash } from '@lucide/angular';
 import { FormsModule } from '@angular/forms';
+import { NgClass } from '@angular/common';
 
 interface RunningTaskTimer {
   duration: number;
@@ -14,8 +15,11 @@ interface RunningTaskTimer {
     LucidePlay,
     LucidePause,
     LucideTrash,
+    LucideCheck,
+    LucideRefreshCcw,
     LucideLoaderCircle,
-    FormsModule
+    FormsModule,
+    NgClass
   ],
   templateUrl: './task-list.html',
   styleUrl: './task-list.css',
@@ -62,7 +66,7 @@ export class TaskList implements OnInit, OnDestroy {
     else {
       this.stopTimer();
       this.clearPersistedTimer();
-      this.onUpdate.emit(this.task());
+      this.emitTask();
     }
   }
 
@@ -71,7 +75,16 @@ export class TaskList implements OnInit, OnDestroy {
     if(description === this.task().description) return;
 
     this.task.update(task => ({ ...task, description }));
+    this.emitTask();
+  }
+
+  emitTask(): void {
     this.onUpdate.emit(this.task());
+  }
+
+  completeTask() {
+    this.task.update(item => ({ ...item, completed: !item.completed }))
+    this.emitTask();
   }
 
   private stopTimer() {
