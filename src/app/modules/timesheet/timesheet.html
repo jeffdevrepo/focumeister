@@ -3,7 +3,7 @@
         <button [routerLink]="['/']" class="border border-gray-200 p-3 size-[42.5px] cursor-pointer">
             <svg lucideArrowLeft size="16" class="stroke-gray-950 mx-auto"></svg>
         </button>
-        <div class="flex gap-3">
+        <div class="flex gap-3 min-w-[200px]">
             <app-select-dropdown
                 name="project"
                 [options]="projects()"
@@ -11,6 +11,7 @@
                 labelKey="name"
                 [ngModel]="selectedProject()"
                 (ngModelChange)="selectedProject.set($event); getTasks($event)"
+                class="w-full"
             />
         </div>
     </div>
@@ -38,8 +39,10 @@
         @for(task of tasks(); track task.id) {
             <app-task-list 
                 [data]="task"
+                [startImmediately]="autoStartTaskId() === task.id"
                 (onUpdate)="updateTask($event)"
                 (onDelete)="deleteTask($event)"
+                (onTimerStarted)="clearAutoStartTask(task.id)"
             ></app-task-list>
         } @empty {
             <p class="text-gray-500 text-center">No tasks available.</p>

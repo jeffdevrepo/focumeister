@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, input, linkedSignal, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, inject, input, linkedSignal, output, signal } from '@angular/core';
 import { TaskModel } from '../../../core/models/task.model';
 import { LucideCheck, LucideLoaderCircle, LucidePause, LucidePlay, LucideRefreshCcw, LucideTrash } from '@lucide/angular';
 import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
+import { TaskTimerCoordinatorService } from '../../services/task-timer-coordinator.service';
 
 interface RunningTaskTimer {
   duration: number;
@@ -27,13 +28,17 @@ interface RunningTaskTimer {
 })
 export class TaskList implements OnInit, OnDestroy {
   private readonly storageKeyPrefix = 'focumeister:task-timer';
+  private readonly timerCoordinator = inject(TaskTimerCoordinatorService);
   private timerId: any = null;
+  private unregisterTimer: (() => void) | null = null;
   public data = input.required<TaskModel>();
+  public startImmediately = input(false);
   public task = linkedSignal<TaskModel>(() => ({ ...this.data() }));
   public description = linkedSignal<string>(() => this.data().description);
 
   public onUpdate = output<TaskModel>();
   public onDelete = output<number>();
+  public onTimerStarted = output<void>();
   public isDeleting: boolean = false;
   public isStartTask = signal<boolean>(false);
   
@@ -46,28 +51,35 @@ export class TaskList implements OnInit, OnDestroy {
   })
 
   ngOnInit() {
+    this.unregisterTimer = this.timerCoordinator.register(this.task().id, () => this.pauseTask());
+
+    if (this.startImmediately()) {
+      this.startTask();
+      this.onTimerStarted.emit();
+      return;
+    }
+
     this.resumePersistedTimer();
   }
 
   ngOnDestroy() {
     this.stopTimer();
+    this.unregisterTimer?.();
   }
 
   startTask() {
-    this.isStartTask.update(state => !state);
+    if (this.isStartTask()) {
+      this.pauseTask();
+      return;
+    }
 
-    if(this.isStartTask()) {
-      this.persistTimer({
-        duration: this.task().duration,
-        startedAt: Date.now(),
-      });
-      this.startTimer();
-    }
-    else {
-      this.stopTimer();
-      this.clearPersistedTimer();
-      this.emitTask();
-    }
+    this.timerCoordinator.start(this.task().id);
+    this.isStartTask.set(true);
+    this.persistTimer({
+      duration: this.task().duration,
+      startedAt: Date.now(),
+    });
+    this.startTimer();
   }
 
   updateDescription() {
@@ -108,9 +120,19 @@ export class TaskList implements OnInit, OnDestroy {
     const timer = this.getPersistedTimer();
     if(!timer) return;
 
+    this.timerCoordinator.start(this.task().id);
     this.syncDurationWithPersistedTimer();
     this.isStartTask.set(true);
     this.startTimer();
+  }
+
+  private pauseTask() {
+    this.syncDurationWithPersistedTimer();
+    this.stopTimer();
+    this.clearPersistedTimer();
+    this.isStartTask.set(false);
+    this.timerCoordinator.stop(this.task().id);
+    this.emitTask();
   }
 
   private syncDurationWithPersistedTimer(): boolean {

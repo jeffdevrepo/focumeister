@@ -39,6 +39,7 @@ export class Timesheet implements OnInit {
   public projects = signal<ProjectModel[]>([]);
   public taskLoading = signal<boolean>(false);
   public taskAddLoading = signal<boolean>(false);
+  public autoStartTaskId = signal<number | null>(null);
 
   constructor() {
     effect(() => this.tasks().sort((a, b) =>
@@ -110,6 +111,7 @@ export class Timesheet implements OnInit {
             return;
           }
 
+          this.autoStartTaskId.set(res.id);
           this.tasks.update(tasks => ([ ...tasks, res ]));
           toast.success('Task has been created.');
         },
@@ -136,5 +138,9 @@ export class Timesheet implements OnInit {
         toast.success('Task has been deleted.');
       },
     })
+  }
+
+  clearAutoStartTask(id: number) {
+    if (this.autoStartTaskId() === id) this.autoStartTaskId.set(null);
   }
 }
